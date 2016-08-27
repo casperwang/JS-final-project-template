@@ -8,7 +8,8 @@
 </head>
 <body>
 	<canvas id="game" width="720" height="540" style="top:0;left:0;"></canvas>
-        <script language="javascript">
+	<script language="javascript">
+		var pause = false;
 		var click = false;
 		var count = 0;
 		var mouseX = 0;
@@ -16,12 +17,14 @@
 		var score = 0;
 		var money = 100;
 		var health = 20;
-		var enemy = [];
-		var tower = [];
+		var enemies = [];
+		var enemies2 = [];
+		var towers = [];
 		var missile = [];
+		var missile2 = [];
 		var grapeshot = [];
+		var grapeshot2 = [];
 		var enemyPath = [];
-		var map = new Array(18);
 		var mapX = 0;
 		var mapY = 0;
 		var z = [true, true, true, true];
@@ -128,11 +131,13 @@
 			mouseY = event.pageY - 7;
 		});
 		function draw() {
-			drawMap();
-			drawMenu();
-			enemyMove();
-			drawTower();
-			count++;
+			if (pause == false) {
+				drawMap();
+				enemy();
+				tower();
+				drawMenu();
+				count++;
+			}
 		}
 		function drawMap() {
 			var canvas = document.getElementById("game");
@@ -159,95 +164,6 @@
 				for (var i = 0; i <= 30; i++) {
 					ctx.fillStyle = "rgb(0, " + (i * 6) + ", " + (i * 6) + ")";
 					ctx.fillRect(mapX * 30 + (i / 2), mapY * 30 + (i / 2), Math.abs(i - 30), Math.abs(i - 30));
-				}
-			}
-		}
-		function drawTower() {
-			var canvas = document.getElementById("game");
-			if (canvas.getContext) {
-				var ctx = canvas.getContext("2d");
-				if (click == "a") {
-					drawTowerA(true, mouseX, mouseY, 1);
-				} else if (click == "b") {
-					drawTowerB(true, mouseX, mouseY, 1);
-				} else if (click == "c") {
-					drawTowerC(true, mouseX, mouseY, 1);
-				} else if (click == "d") {
-					drawTowerD(mouseX, mouseY, 0);
-				} else if (click == "e") {
-					drawTowerE(true, mouseX, mouseY, 0);
-				} else if (click == "f") {
-					drawTowerF(true, mouseX, mouseY, 0, 1);
-				} else if (click == "g") {
-					drawTowerG(mouseX, mouseY);
-				} else if (click == "h") {
-					drawTowerH(mouseX, mouseY, 1);
-				}
-				for (var i = 0; i < tower.length; i++) {
-					tower[i].action();
-					if (tower[i].s == "a") {
-						if (Math.sqrt(((tower[i].x - mouseX) * (tower[i].x - mouseX)) + ((tower[i].y - mouseY) * (tower[i].y - mouseY))) < 15 && click == false) {
-							drawTowerA(true, tower[i].x, tower[i].y, tower[i].l);
-						} else {
-							drawTowerA(false, tower[i].x, tower[i].y, tower[i].l);
-						}
-					}
-					if (tower[i].s == "b") {
-						if (Math.sqrt(((tower[i].x - mouseX) * (tower[i].x - mouseX)) + ((tower[i].y - mouseY) * (tower[i].y - mouseY))) < 15 && click == false) {
-							drawTowerB(true, tower[i].x, tower[i].y, tower[i].l);
-						} else {
-							drawTowerB(false, tower[i].x, tower[i].y, tower[i].l);
-						}
-					}
-					if (tower[i].s == "c") {
-						if (Math.sqrt(((tower[i].x - mouseX) * (tower[i].x - mouseX)) + ((tower[i].y - mouseY) * (tower[i].y - mouseY))) < 15 && click == false) {
-							drawTowerC(true, tower[i].x, tower[i].y, tower[i].l);
-						} else {
-							drawTowerC(false, tower[i].x, tower[i].y, tower[i].l);
-						}
-					}
-					if (tower[i].s == "d") {
-						drawTowerD(tower[i].x, tower[i].y, tower[i].b);
-					}
-					if (tower[i].s == "e") {
-						if (Math.sqrt(((tower[i].x - mouseX) * (tower[i].x - mouseX)) + ((tower[i].y - mouseY) * (tower[i].y - mouseY))) < 15 && click == false) {
-							drawTowerE(true, tower[i].x, tower[i].y, tower[i].b.n);
-						} else {
-							drawTowerE(false, tower[i].x, tower[i].y, tower[i].b.n);
-						}
-					}
-					if (tower[i].s == "f") {
-						if (Math.sqrt(((tower[i].x - mouseX) * (tower[i].x - mouseX)) + ((tower[i].y - mouseY) * (tower[i].y - mouseY))) < 15 && click == false) {
-							drawTowerF(true, tower[i].x, tower[i].y, tower[i].b.n, tower[i].l);
-						} else {
-							drawTowerF(false, tower[i].x, tower[i].y, tower[i].b.n, tower[i].l);
-						}
-					}
-					if (tower[i].s == "g") {
-						drawTowerG(tower[i].x, tower[i].y);
-					}
-					if (tower[i].s == "h") {
-						drawTowerH(tower[i].x, tower[i].y, tower[i].l);
-					}
-					if (tower[i].s == "a" || tower[i].s == "b" || tower[i].s == "c" || tower[i].s == "e" || tower[i].s == "f" || tower[i].s == "g" || tower[i].s == "h") {
-						ctx.beginPath();
-						ctx.textBaseline = "middle";
-						ctx.textAlign = "center";
-						ctx.font = "10pt cursive";
-						ctx.fillStyle = "rgb(0, 0, 0)";
-						ctx.fillText(tower[i].l, tower[i].x, tower[i].y);
-						ctx.closePath();
-					}
-				}
-				for (var i = 0; i < missile.length; i++) {
-					if (enemy.length > 0) {
-						missile[i].move();
-					}
-				}
-				for (var i = 0; i < grapeshot.length; i++) {
-					if (enemy.length > 0) {
-						grapeshot[i].move();
-					}
 				}
 			}
 		}
@@ -282,126 +198,339 @@
 				}
 			}
 		}
-		function enemyMove() {
+		function enemy() {
 			if (count % 30 == 0) {
-				enemy.push(new Enemy());
+				enemies.push(new Enemy());
 			}
-			for (var i = 0; i < enemy.length; i++) {
-				enemy[i].move();
-				for (var j = 0; j < enemy[i].m.length; j++) {
-					enemy[i].h = enemy[i].h - (enemy[i].h * 0.000005);
-					if (count - 450 > enemy[i].m[j]) {
-						enemy[i].m.splice(j, 1);
+			for (var i = 0; i < enemies.length; i++) {
+				enemies[i].move();
+				for (var j = 0; j < enemies[i].m.length; j++) {
+					enemies[i].h = enemies[i].h - (enemies[i].h * 0.000005);
+					if (count - 450 > enemies[i].m[j]) {
+						enemies[i].m.splice(j, 1);
 					}
 				}
-				if(enemy[i].x > enemyPath[enemyPath.length - 1].x - 15 && enemy[i].x < enemyPath[enemyPath.length - 1].x + 15 && enemy[i].y > enemyPath[enemyPath.length - 1].y - 15 && enemy[i].y < enemyPath[enemyPath.length - 1].y + 15){
+			}
+			for (var i = 0; i < enemies.length; i++) {
+				if(enemies[i].x > enemyPath[enemyPath.length - 1].x - 15 && enemies[i].x < enemyPath[enemyPath.length - 1].x + 15 && enemies[i].y > enemyPath[enemyPath.length - 1].y - 15 && enemies[i].y < enemyPath[enemyPath.length - 1].y + 15){
 					drawEnemy(i, 0.5);
-					enemy.splice(i, 1);
 					health--;
-					for (var j = 0; j < missile.length; j++) {
-						if(missile[j].e == j) {
-							missile.splice(j, 1);
-						} else {
-							missile[j].e = missile[j].e - 1;
-						}
-					}
-				} else if (0 >= enemy[i].h) {
-					money = money + Math.floor(enemy[i].l / 50) + 5;
-					score = score + Math.floor(enemy[i].l);
-					for (var j = missile.length - 1; j >= 0; j--) {
-						if (enemy.length < missile.length) {
-							missile.splice(j, 1);
-						}
-						if (missile[j].e > i) {
-							missile[j].e = missile[j].e - 1;
-						}
-					}
-					enemy.splice(i, 1);
+					enemies.splice(i, 1);
+				}
+			}
+			for (var i = 0; i < enemies.length; i++) {
+				if (0 >= enemies[i].h) {
+					money = money + Math.floor(enemies[i].l / 50) + 5;
+					score = score + Math.floor(enemies[i].l);
+					enemies.splice(i, 1);
+				}
+			}
+			for (var i = 0; i < enemies.length; i++) {
+				drawEnemy(i);
+			}
+		}
+		function drawEnemy(i) {
+			var canvas = document.getElementById("game");
+			if (canvas.getContext) {
+				var ctx = canvas.getContext("2d");
+				ctx.fillStyle = "rgb(255, 255, 255)";
+				ctx.strokeStyle = "rgb(0, 0, 0)";
+				ctx.fillRect(enemies[i].x - 5, enemies[i].y - 5, 10, 10);
+				ctx.strokeRect(enemies[i].x - 6, enemies[i].y - 6, 12, 12);
+				if (enemies[i].m.length > 0) {
+					ctx.fillStyle = "rgba(60, 180, 0, 0.5)";
+					ctx.fillRect(enemies[i].x - 5, enemies[i].y - 5, 10, 10);
+				}
+				if (enemies[i].s == 0.5) {
+					ctx.strokeStyle = "rgb(100, 178, 255)";
+					ctx.strokeRect(enemies[i].x - 5, enemies[i].y - 5, 10, 10);
+					ctx.strokeRect(enemies[i].x - 4, enemies[i].y - 4, 8, 8);
+				}
+				ctx.fillStyle = "rgb(82, 255, 82)";
+				ctx.fillRect(enemies[i].x - 7, enemies[i].y + 6, enemies[i].h / enemies[i].o * 14, 2);
+			}
+		}
+		function Missile(l, x, y, k) {
+			this.l = l;
+			this.x = x;
+			this.y = y;
+			this.e = {k: k, n: 0};
+			this.d = {x: 0, y:0};
+			this.move = function() {
+				this.d.x = (enemies[this.e.k].x - this.x) * (1 / (Math.abs(enemies[this.e.k].x - this.x) + Math.abs(enemies[this.e.k].y - this.y)));
+				this.d.y = (enemies[this.e.k].y - this.y) * (1 / (Math.abs(enemies[this.e.k].x - this.x) + Math.abs(enemies[this.e.k].y - this.y)));
+				if (this.d.x > 0) {
+					this.d.x = Math.sqrt(this.d.x) * 1.25;
 				} else {
-					drawEnemy(i);
+					this.d.x = Math.sqrt(Math.abs(this.d.x)) * -1.25;
+				}
+				if (this.d.y > 0) {
+					this.d.y = Math.sqrt(this.d.y) * 1.25;
+				} else {
+					this.d.y = Math.sqrt(Math.abs(this.d.y)) * -1.25;
+				}
+				this.x = this.x + this.d.x;
+				this.y = this.y + this.d.y;
+				drawMissile(this.x, this.y, this.d.x, this.d.y);
+				if (this.x > enemies[this.e.k].x - 5 && this.x < enemies[this.e.k].x + 5 && this.y > enemies[this.e.k].y - 5 && this.y < enemies[this.e.k].y + 5) {
+					enemies[this.e.k].h = enemies[this.e.k].h - this.l;
+					missile.splice(missile.indexOf(this, 0), 1);
+				} else {
+					for (var k = 0; k < enemies.length; k++) {
+						if ((this.l <= 5 && Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 30 + this.l * 45) || (this.l > 5 && Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 255)) {
+							if (Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < this.e.n) {
+								this.e.n = Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y)));
+								this.e.k = k;
+							}
+						}
+					}
 				}
 			}
 		}
-		function drawMenu() {
-			var canvas = document.getElementById("game");
-			if (canvas.getContext) {
-				var ctx = canvas.getContext("2d");
-				ctx.fillStyle = "rgb(0, 0, 0)";
-				ctx.fillRect(541, 1, 178, 538);
-				ctx.beginPath();
-				ctx.strokeStyle = "rgb(255, 255, 255)";
-				ctx.moveTo(540, 0);
-				ctx.lineTo(540, 540);
-				ctx.stroke();
-				ctx.closePath();
-				ctx.font = "18pt cursive";
-				ctx.textBaseline = "top";
-				ctx.textAlign = "left";
-				ctx.fillStyle = "rgb(255, 255, 255)";
-				ctx.fillText("Score:", 550, 10);
-				ctx.fillText("Money:", 550, 45);
-				ctx.fillText("Health:", 550, 80);
-				ctx.textAlign = "right";
-				ctx.fillText(score, 710, 10);
-				ctx.fillText(money, 710, 45);
-				ctx.fillText(health, 710, 80);
-				drawTowerA(false, 570, 510, 1);
-				drawHint(570, 510, "a");
-				drawTowerB(false, 610, 510, 1);
-				drawHint(610, 510, "b");
-				drawTowerC(false, 650, 510, 1);
-				drawHint(650, 510, "c");
-				drawTowerD(690, 510, 0);
-				drawHint(690, 510, "d");
-				drawTowerE(false, 570, 470, 0);
-				drawHint(570, 470, "e");
-				drawTowerF(false, 610, 470, 0, 1);
-				drawHint(610, 470, "f");
-				drawTowerG(650, 470);
-				drawHint(650, 470, "g");
-				drawTowerH(690, 470);
-				drawHint(690, 470, "h");
+		function Grapeshot(x, y, l, dx, dy) {
+			this.x = x;
+			this.y = y;
+			this.l = l;
+			this.d = {x: dx, y: dy};
+			this.move = function(){
+				var canvas = document.getElementById("game");
+				if (canvas.getContext) {
+					var ctx = canvas.getContext("2d");
+					if (this.d.x > 0) {
+						this.x = this.x + Math.sqrt(this.d.x) * 2;
+					} else {
+						this.x = this.x - Math.sqrt(Math.abs(this.d.x)) * 2;
+					}
+					if (this.d.y > 0) {
+						this.y = this.y + Math.sqrt(this.d.y) * 2;
+					} else {
+						this.y = this.y - Math.sqrt(Math.abs(this.d.y)) * 2;
+					}
+					ctx.beginPath();
+					ctx.fillStyle = "rgb(190, 190, 75)";
+					ctx.arc(this.x, this.y, 2, 0, Math.PI*2, true);
+					ctx.fill();
+					ctx.closePath();
+					for (var k = 0; k < enemies.length; k++) {
+						if (this.x > enemies[k].x - 5 && this.x < enemies[k].x + 5 && this.y > enemies[k].y - 5 && this.y < enemies[k].y + 5) {
+							enemies[k].h = enemies[k].h - this.l;
+							grapeshot.splice(grapeshot.indexOf(this, 0), 1);
+						}
+					}
+					if (this.x > 540 || this.y > 540 || this.x < 0 || this.y < 0 ) {
+						grapeshot.splice(grapeshot.indexOf(this, 0), 1);
+					}
+				}
 			}
 		}
-		function drawHint(x, y, s) {
+		function Tower(s, c) {
 			var canvas = document.getElementById("game");
 			if (canvas.getContext) {
 				var ctx = canvas.getContext("2d");
-				if (Math.sqrt(((x - mouseX) * (x - mouseX)) + ((y - mouseY) * (y - mouseY))) < 15) {
-					ctx.font = "12pt cursive";
-					ctx.textBaseline = "top";
-					ctx.textAlign = "left";
-					ctx.fillStyle = "rgb(255, 255, 255)";
-					for (var k = 0; k < 7; k++) {
-						ctx.beginPath();
-						if (s == "a") {
-							ctx.strokeStyle = "rgba(255, " + (100 + (k * 20)) + ", 0, " + (1 - k / 6) + ")";
-						} else if (s == "b") {
-							ctx.strokeStyle = "rgba(0, " + (100 + k * 20) + ", 255, " + (1 - k / 6) + ")";
-						} else if (s == "c") {
-							ctx.strokeStyle = "rgba(" + (75 + (k * 20)) + ", 120, 255, " + (1 - k / 6) + ")";
-						} else if (s == "d") {
-							ctx.strokeStyle = "rgba(255, " + (k * 20) + ", 0, " + (1 - k / 6) + ")";
-						} else if (s == "e") {
-							ctx.strokeStyle = "rgba(" + (100 + k * 30) + ", " + (255 - k * 10) + ", " + (255 - k * 10) + ", " + (1 - k / 6) + ")";
-						} else if (s == "f") {
-							ctx.strokeStyle = "rgba(" + (k * 20) + ", " + (120 + k * 20) + ", 0, " + (1 - k / 6) + ")";
-						} else if (s == "g") {
-							ctx.strokeStyle = "rgba(" + (130 + k * 20) + ", " + (130 + k * 20) + ", 75, " + (1 - k / 6) + ")";
-						} else if (s == "h") {
-							ctx.strokeStyle = "rgba(" + (90 + k * 20) + ", 0, " + (90 + k * 20) + ", " + (1 - k / 6) + ")";
+				this.s = s;
+				this.l = 1;
+				this.x = Math.floor(mouseX / 30) * 30 + 15;
+				this.y = Math.floor(mouseY / 30) * 30 + 15;
+				this.c = c;
+				this.e = 0;
+				this.b = {f: false, n: 0};
+				if (s == "a") {
+					this.action = function() {
+						for (var k = 0; k < enemies.length; k++) {
+							if ((this.l <= 5 && Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 45 + this.l * 15) || (this.l > 5 && Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 120)) {
+								ctx.beginPath();
+								ctx.strokeStyle = "rgb(255, 0, 0)";
+								ctx.moveTo(this.x, this.y);
+								ctx.lineTo(enemies[k].x, enemies[k].y);
+								ctx.stroke();
+								ctx.closePath();
+								enemies[k].h = enemies[k].h - (this.l / 50);
+								break;
+							}
 						}
-						ctx.moveTo(560, 168 + k);
-						ctx.lineTo(700, 168 + k);
-						ctx.arc(700, 180, 12 - k, 270 * Math.PI / 180, 0, false);
-						ctx.lineTo(712 - k, 428);
-						ctx.arc(700, 428, 12 - k, 0, 90 * Math.PI / 180, false);
-						ctx.lineTo(563, 440 - k);
-						ctx.arc(560, 428, 12 - k, 90 * Math.PI / 180, Math.PI, false);
-						ctx.lineTo(548 + k, 180);
-						ctx.arc(560, 180, 12 - k, Math.PI, 270 * Math.PI / 180, false);
-						ctx.stroke();
+					}
+				} else if (s == "b") {
+					this.action = function() {
+						if ((count - this.c) % 50 == 0) {
+							for (var k = 0; k < enemies.length; k++) {
+								if ((this.l <= 5 && Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 30 + this.l * 45) || (this.l > 5 && Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 255)) {
+									this.e = k;
+									missile.push(new Missile(this.l, this.x, this.y, this.e));
+									break;
+								}
+							}
+						}
+					}
+				} else if (s == "c") {
+					this.action = function() {
+						for (var k = 0; k < enemies.length; k++) {
+							if (Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 45) {
+								ctx.beginPath();
+								ctx.strokeStyle = "rgb(255, 0, 0)";
+								ctx.moveTo(this.x, this.y);
+								ctx.lineTo(enemies[k].x, enemies[k].y);
+								ctx.stroke();
+								ctx.closePath();
+								enemies[k].h = enemies[k].h - (this.l / 300);
+							}
+						}
+					}
+				} else if (s == "d") {
+					this.action = function() {
+						if (this.b.n <= 30) {
+							this.b.n = this.b.n + 1;
+							for (var k = 0; k < enemies.length; k++) {
+								if (Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 15 + this.b.n) {
+									enemies[k].h = 0;
+								}
+							}
+						} else {
+							map[(this.x - 15) / 30][(this.y - 15) / 30] = "unTower";
+							towers.splice(towers.indexOf(this, 0), 1);
+						}
+					}
+				} else if (s == "e") {
+					this.action = function() {
+						if ((count - this.c) % (900 - this.l * 10) == 0) {
+							this.b.f = true;
+						}
+						if (this.b.f == true) {
+							this.b.n = this.b.n + 1;
+							for (var k = 0; k < enemies.length; k++) {
+								if (Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 15 + (this.b.n * 0.5)) {
+									enemies[k].s = 0.5;
+								}
+							}
+							if (this.b.n == 60) {
+								this.b.n = 0;
+								this.b.f = false;
+							}
+						}
+					}
+				} else if (s == "f") {
+					this.action = function() {
+						if ((count - this.c) % (1200 - this.l * 10) == 0) {
+							this.b.f = true;
+						}
+						if (this.b.f == true) {
+							this.b.n = this.b.n + 1.5;
+							for (var k = 0; k < enemies.length; k++) {
+								if (Math.sqrt(((enemies[k].x - this.x) * (enemies[k].x - this.x)) + ((enemies[k].y - this.y) * (enemies[k].y - this.y))) < 15 + (this.b.n * 0.5)) {
+									enemies[k].m.push(count);
+								}
+							}
+							if ((this.l <= 5 && this.b.n == 30 + this.l * 30) || (this.l > 5 && this.b.n == 180)) {
+								this.b.n = 0;
+								this.b.f = false;
+							}
+						}
+					}
+				} else if (s == "g") {
+					this.action = function() {
+						if ((count - this.c) % 240 == 0) {
+							for (var i = -1; i <= 1; i += 0.5) {
+								for (var j = -1; j <= 1; j += 0.5) {
+									if (Math.abs(i) + Math.abs(j) == 1) {
+										grapeshot.push(new Grapeshot(this.x, this.y, this.l, i, j));
+									}
+								}
+							}
+						}
+					}
+				} else if (s == "h") {
+					this.action = function() {
+						if ((count - c) % 120 == 0) {
+							money++;
+						}
+					}
+				}
+			}
+		}
+		function tower() {
+			var canvas = document.getElementById("game");
+			if (canvas.getContext) {
+				var ctx = canvas.getContext("2d");
+				if (click == "a") {
+					drawTowerA(true, mouseX, mouseY, 1);
+				} else if (click == "b") {
+					drawTowerB(true, mouseX, mouseY, 1);
+				} else if (click == "c") {
+					drawTowerC(true, mouseX, mouseY, 1);
+				} else if (click == "d") {
+					drawTowerD(mouseX, mouseY, 0);
+				} else if (click == "e") {
+					drawTowerE(true, mouseX, mouseY, 0);
+				} else if (click == "f") {
+					drawTowerF(true, mouseX, mouseY, 0, 1);
+				} else if (click == "g") {
+					drawTowerG(mouseX, mouseY);
+				} else if (click == "h") {
+					drawTowerH(mouseX, mouseY, 1);
+				}
+				for (var i = 0; i < towers.length; i++) {
+					towers[i].action();
+					if (towers[i].s == "a") {
+						if (Math.sqrt(((towers[i].x - mouseX) * (towers[i].x - mouseX)) + ((towers[i].y - mouseY) * (towers[i].y - mouseY))) < 15 && click == false) {
+							drawTowerA(true, towers[i].x, towers[i].y, towers[i].l);
+						} else {
+							drawTowerA(false, towers[i].x, towers[i].y, towers[i].l);
+						}
+					}
+					if (towers[i].s == "b") {
+						if (Math.sqrt(((towers[i].x - mouseX) * (towers[i].x - mouseX)) + ((towers[i].y - mouseY) * (towers[i].y - mouseY))) < 15 && click == false) {
+							drawTowerB(true, towers[i].x, towers[i].y, towers[i].l);
+						} else {
+							drawTowerB(false, towers[i].x, towers[i].y, towers[i].l);
+						}
+					}
+					if (towers[i].s == "c") {
+						if (Math.sqrt(((towers[i].x - mouseX) * (towers[i].x - mouseX)) + ((towers[i].y - mouseY) * (towers[i].y - mouseY))) < 15 && click == false) {
+							drawTowerC(true, towers[i].x, towers[i].y, towers[i].l);
+						} else {
+							drawTowerC(false, towers[i].x, towers[i].y, towers[i].l);
+						}
+					}
+					if (towers[i].s == "d") {
+						drawTowerD(towers[i].x, towers[i].y, towers[i].b.n);
+					}
+					if (towers[i].s == "e") {
+						if (Math.sqrt(((towers[i].x - mouseX) * (towers[i].x - mouseX)) + ((towers[i].y - mouseY) * (towers[i].y - mouseY))) < 15 && click == false) {
+							drawTowerE(true, towers[i].x, towers[i].y, towers[i].b.n);
+						} else {
+							drawTowerE(false, towers[i].x, towers[i].y, towers[i].b.n);
+						}
+					}
+					if (towers[i].s == "f") {
+						if (Math.sqrt(((towers[i].x - mouseX) * (towers[i].x - mouseX)) + ((towers[i].y - mouseY) * (towers[i].y - mouseY))) < 15 && click == false) {
+							drawTowerF(true, towers[i].x, towers[i].y, towers[i].b.n, towers[i].l);
+						} else {
+							drawTowerF(false, towers[i].x, towers[i].y, towers[i].b.n, towers[i].l);
+						}
+					}
+					if (towers[i].s == "g") {
+						drawTowerG(towers[i].x, towers[i].y);
+					}
+					if (towers[i].s == "h") {
+						drawTowerH(towers[i].x, towers[i].y, towers[i].l);
+					}
+					if (towers[i].s == "a" || towers[i].s == "b" || towers[i].s == "c" || towers[i].s == "e" || towers[i].s == "f" || towers[i].s == "g" || towers[i].s == "h") {
+						ctx.beginPath();
+						ctx.textBaseline = "middle";
+						ctx.textAlign = "center";
+						ctx.font = "10pt cursive";
+						ctx.fillStyle = "rgb(0, 0, 0)";
+						ctx.fillText(towers[i].l, towers[i].x, towers[i].y);
 						ctx.closePath();
+					}
+				}
+				for (var i = 0; i < missile.length; i++) {
+					if (enemies.length > 0) {
+						missile[i].move();
+					}
+				}
+				for (var i = 0; i < grapeshot.length; i++) {
+					if (enemies.length > 0) {
+						grapeshot[i].move();
 					}
 				}
 			}
@@ -589,10 +718,10 @@
 				var ctx = canvas.getContext("2d");
 				ctx.beginPath();
 				ctx.strokeStyle = "rgb(255, 0, 0)";
-				ctx.moveTo(x + (dx * 3.25), y + (dy * 3.25));
-				ctx.lineTo(x + (dx * 2), y - (dy * 2));
-				ctx.lineTo(x - (dx * 2), y + (dy * 2));
-				ctx.lineTo(x + (dx * 3.25), y + (dy * 3.25));
+				ctx.moveTo(x + (dx * 2), y + (dy * 2));
+				ctx.lineTo(x + dx, y - dy);
+				ctx.lineTo(x - dx, y + dy);
+				ctx.lineTo(x + (dx * 2), y + (dy * 2));
 				ctx.stroke();
 				ctx.closePath();
 				ctx.beginPath();
@@ -602,25 +731,88 @@
 				ctx.closePath();
 			}
 		}
-		function drawEnemy(i) {
+		function drawMenu() {
 			var canvas = document.getElementById("game");
 			if (canvas.getContext) {
 				var ctx = canvas.getContext("2d");
+				ctx.fillStyle = "rgb(0, 0, 0)";
+				ctx.fillRect(541, 1, 178, 538);
+				ctx.beginPath();
+				ctx.strokeStyle = "rgb(255, 255, 255)";
+				ctx.moveTo(540, 0);
+				ctx.lineTo(540, 540);
+				ctx.stroke();
+				ctx.closePath();
+				ctx.font = "18pt cursive";
+				ctx.textBaseline = "top";
+				ctx.textAlign = "left";
 				ctx.fillStyle = "rgb(255, 255, 255)";
-				ctx.strokeStyle = "rgb(0, 0, 0)";
-				ctx.fillRect(enemy[i].x - 5, enemy[i].y - 5, 10, 10);
-				ctx.strokeRect(enemy[i].x - 6, enemy[i].y - 6, 12, 12);
-				if (enemy[i].m.length > 0) {
-					ctx.fillStyle = "rgba(60, 180, 0, 0.5)";
-					ctx.fillRect(enemy[i].x - 5, enemy[i].y - 5, 10, 10);
+				ctx.fillText("Score:", 550, 10);
+				ctx.fillText("Money:", 550, 45);
+				ctx.fillText("Health:", 550, 80);
+				ctx.textAlign = "right";
+				ctx.fillText(score, 710, 10);
+				ctx.fillText(money, 710, 45);
+				ctx.fillText(health, 710, 80);
+				drawTowerA(false, 570, 510, 1);
+				drawHint(570, 510, "a");
+				drawTowerB(false, 610, 510, 1);
+				drawHint(610, 510, "b");
+				drawTowerC(false, 650, 510, 1);
+				drawHint(650, 510, "c");
+				drawTowerD(690, 510, 0);
+				drawHint(690, 510, "d");
+				drawTowerE(false, 570, 470, 0);
+				drawHint(570, 470, "e");
+				drawTowerF(false, 610, 470, 0, 1);
+				drawHint(610, 470, "f");
+				drawTowerG(650, 470);
+				drawHint(650, 470, "g");
+				drawTowerH(690, 470);
+				drawHint(690, 470, "h");
+			}
+		}
+		function drawHint(x, y, s) {
+			var canvas = document.getElementById("game");
+			if (canvas.getContext) {
+				var ctx = canvas.getContext("2d");
+				if (Math.sqrt(((x - mouseX) * (x - mouseX)) + ((y - mouseY) * (y - mouseY))) < 15) {
+					ctx.font = "12pt cursive";
+					ctx.textBaseline = "top";
+					ctx.textAlign = "left";
+					ctx.fillStyle = "rgb(255, 255, 255)";
+					for (var k = 0; k < 7; k++) {
+						ctx.beginPath();
+						if (s == "a") {
+							ctx.strokeStyle = "rgba(255, " + (100 + (k * 20)) + ", 0, " + (1 - k / 6) + ")";
+						} else if (s == "b") {
+							ctx.strokeStyle = "rgba(0, " + (100 + k * 20) + ", 255, " + (1 - k / 6) + ")";
+						} else if (s == "c") {
+							ctx.strokeStyle = "rgba(" + (75 + (k * 20)) + ", 120, 255, " + (1 - k / 6) + ")";
+						} else if (s == "d") {
+							ctx.strokeStyle = "rgba(255, " + (k * 20) + ", 0, " + (1 - k / 6) + ")";
+						} else if (s == "e") {
+							ctx.strokeStyle = "rgba(" + (100 + k * 30) + ", " + (255 - k * 10) + ", " + (255 - k * 10) + ", " + (1 - k / 6) + ")";
+						} else if (s == "f") {
+							ctx.strokeStyle = "rgba(" + (k * 20) + ", " + (120 + k * 20) + ", 0, " + (1 - k / 6) + ")";
+						} else if (s == "g") {
+							ctx.strokeStyle = "rgba(" + (130 + k * 20) + ", " + (130 + k * 20) + ", 75, " + (1 - k / 6) + ")";
+						} else if (s == "h") {
+							ctx.strokeStyle = "rgba(" + (90 + k * 20) + ", 0, " + (90 + k * 20) + ", " + (1 - k / 6) + ")";
+						}
+						ctx.moveTo(560, 168 + k);
+						ctx.lineTo(700, 168 + k);
+						ctx.arc(700, 180, 12 - k, 270 * Math.PI / 180, 0, false);
+						ctx.lineTo(712 - k, 428);
+						ctx.arc(700, 428, 12 - k, 0, 90 * Math.PI / 180, false);
+						ctx.lineTo(563, 440 - k);
+						ctx.arc(560, 428, 12 - k, 90 * Math.PI / 180, Math.PI, false);
+						ctx.lineTo(548 + k, 180);
+						ctx.arc(560, 180, 12 - k, Math.PI, 270 * Math.PI / 180, false);
+						ctx.stroke();
+						ctx.closePath();
+					}
 				}
-				if (enemy[i].s == 0.5) {
-					ctx.strokeStyle = "rgb(100, 178, 255)";
-					ctx.strokeRect(enemy[i].x - 5, enemy[i].y - 5, 10, 10);
-					ctx.strokeRect(enemy[i].x - 4, enemy[i].y - 4, 8, 8);
-				}
-				ctx.fillStyle = "rgb(82, 255, 82)";
-				ctx.fillRect(enemy[i].x - 7, enemy[i].y + 6, enemy[i].h / enemy[i].o * 14, 2);
 			}
 		}
 		function onMouseDown() {
@@ -629,15 +821,15 @@
 				var ctx = canvas.getContext("2d");
 				if (mouseX < 540 && mouseY < 540 && mouseX >= 0 && mouseY >= 0 && (Math.floor(mouseX / 30) != 0 || Math.floor(mouseY / 30) != 0)) {
 					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "tower") {
-						for (var i = 0; i < tower.length; i++) {
-							if (Math.sqrt(((tower[i].x - mouseX) * (tower[i].x - mouseX)) + ((tower[i].y - mouseY) * (tower[i].y - mouseY))) < 15 && money >= 10 && click == false) {
-								if (tower[i].s == "e" || tower[i].s == "f") {
-									if (tower[i].l < 60) {
-										tower[i].l = tower[i].l + 1;
+						for (var i = 0; i < towers.length; i++) {
+							if (Math.sqrt(((towers[i].x - mouseX) * (towers[i].x - mouseX)) + ((towers[i].y - mouseY) * (towers[i].y - mouseY))) < 15 && money >= 10 && click == false) {
+								if (towers[i].s == "e" || towers[i].s == "f") {
+									if (towers[i].l < 60) {
+										towers[i].l = towers[i].l + 1;
 										money = money - 10;
 									}
 								} else {
-									tower[i].l = tower[i].l + 1;
+									towers[i].l = towers[i].l + 1;
 									money = money - 10;
 								}
 							}
@@ -668,270 +860,26 @@
 			if (canvas.getContext) {
 				var ctx = canvas.getContext("2d");
 				if (mouseX < 540 && mouseY < 540 && mouseX >= 0 && mouseY >= 0 && (Math.floor(mouseX / 30) != 0 || Math.floor(mouseY / 30) != 0)) {
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click == "a") {
+					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click != false) {
 						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
-						tower.push({
-							s: "a",
-							l: 1,
-							x: Math.floor(mouseX / 30) * 30 + 15,
-							y: Math.floor(mouseY / 30) * 30 + 15,
-							c: count,
-							action: function(){
-								for (var k = 0; k < enemy.length; k++) {
-									if ((this.l <= 5 && Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 45 + this.l * 15) || (this.l > 5 && Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 120)) {
-										ctx.beginPath();
-										ctx.strokeStyle = "rgb(255, 0, 0)";
-										ctx.moveTo(this.x, this.y);
-										ctx.lineTo(enemy[k].x, enemy[k].y);
-										ctx.stroke();
-										ctx.closePath();
-										enemy[k].h = enemy[k].h - (this.l / 250);
-										break;
-									}
-								}
-							}
-						});
-						money = money - 50;
-					}
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click == "b"){
-						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
-						tower.push({
-							s: "b",
-							l: 1,
-							x: Math.floor(mouseX / 30) * 30 + 15,
-							y: Math.floor(mouseY / 30) * 30 + 15,
-							c: count,
-							action: function(){
-								if ((count - this.c) % 60 == 0) {
-									for (var k = 0; k < enemy.length; k++) {
-										if ((this.l <= 5 && Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 30 + this.l * 45) || (this.l > 5 && Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 255)) {
-												missile.push({
-												x: this.x,
-												y: this.y,
-												l: this.l,
-												d: {x: 0, y: 0},
-												e: k,
-												move: function(){
-													this.d.x = (enemy[k].x - this.x) * (1 / (Math.abs(enemy[k].x - this.x) + Math.abs(enemy[k].y - this.y)));
-													this.d.y = (enemy[k].y - this.y) * (1 / (Math.abs(enemy[k].x - this.x) + Math.abs(enemy[k].y - this.y)));
-													if (this.d.x > 0) {
-														this.x = this.x + Math.sqrt(this.d.x) * 1.25;
-													} else {
-														this.x = this.x - Math.sqrt(Math.abs(this.d.x)) * 1.25;
-													}
-													if (this.d.y > 0) {
-														this.y = this.y + Math.sqrt(this.d.y) * 1.25;
-													} else {
-														this.y = this.y - Math.sqrt(Math.abs(this.d.y)) * 1.25;
-													}
-													drawMissile(this.x, this.y, this.d.x, this.d.y);
-													if (this.x > enemy[k].x - 5 && this.x < enemy[k].x + 5 && this.y > enemy[k].y - 5 && this.y < enemy[k].y + 5) {
-														enemy[k].h = enemy[k].h - this.l;
-														missile.splice(missile.indexOf(this, 0), 1);
-													}
-												}
-											});
-											break;
-										}
-									}
-								}
-							}
-						});
-						money = money - 50;
-					}
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click == "c"){
-						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
-						tower.push({
-							s: "c",
-							l: 1,
-							x: Math.floor(mouseX / 30) * 30 + 15,
-							y: Math.floor(mouseY / 30) * 30 + 15,
-							c: count,
-							action: function(){
-								for (var k = 0; k < enemy.length; k++) {
-									if (Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 45) {
-										ctx.beginPath();
-										ctx.strokeStyle = "rgb(255, 0, 0)";
-										ctx.moveTo(this.x, this.y);
-										ctx.lineTo(enemy[k].x, enemy[k].y);
-										ctx.stroke();
-										ctx.closePath();
-										enemy[k].h = enemy[k].h - (this.l / 300);
-									}
-								}
-							}
-						});
-						money = money - 50;
-					}
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click == "d"){
-						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
-						tower.push({
-							s: "d",
-							b: 0,
-							x: Math.floor(mouseX / 30) * 30 + 15,
-							y: Math.floor(mouseY / 30) * 30 + 15,
-							c: count,
-							action: function(){
-								if (this.b <= 30) {
-									this.b = this.b + 1;
-									for (var k = 0; k < enemy.length; k++) {
-										if (Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 15 + this.b) {
-											enemy[k].h = 0;
-										}
-									}
-								} else {
-									map[(this.x - 15) / 30][(this.y - 15) / 30] = "unTower";
-									tower.splice(tower.indexOf(this, 0), 1);
-								}
-							}
-						});
-						money = money - 50;
-					}
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click == "e"){
-						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
-						tower.push({
-							s: "e",
-							b: {f: false, n:0},
-							l: 1,
-							x: Math.floor(mouseX / 30) * 30 + 15,
-							y: Math.floor(mouseY / 30) * 30 + 15,
-							c: count,
-							action: function(){
-								if ((count - this.c) % (900 - this.l * 10) == 0) {
-									this.b.f = true;
-								}
-								if (this.b.f == true) {
-									this.b.n = this.b.n + 1;
-									for (var k = 0; k < enemy.length; k++) {
-										if (Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 15 + (this.b.n * 0.5)) {
-											enemy[k].s = 0.5;
-										}
-									}
-									if (this.b.n == 60) {
-										this.b.n = 0;
-										this.b.f = false;
-									}
-								}
-							}
-						});
-						money = money - 50;
-					}
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click == "f"){
-						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
-						tower.push({
-							s: "f",
-							b: {f: false, n:0},
-							l: 1,
-							x: Math.floor(mouseX / 30) * 30 + 15,
-							y: Math.floor(mouseY / 30) * 30 + 15,
-							c: count,
-							action: function(){
-								if ((count - this.c) % (1200 - this.l * 10) == 0) {
-									this.b.f = true;
-								}
-								if (this.b.f == true) {
-									this.b.n = this.b.n + 1;
-									for (var k = 0; k < enemy.length; k++) {
-										if (Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 15 + (this.b.n * 0.5)) {
-											enemy[k].m.push(count);
-										}
-									}
-									if ((this.l <= 5 && this.b.n == 30 + this.l * 30) || (this.l > 5 && this.b.n == 180)) {
-										this.b.n = 0;
-										this.b.f = false;
-									}
-								}
-							}
-						});
-						money = money - 50;
-					}
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click == "g"){
-						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
-						tower.push({
-							s: "g",
-							l: 1,
-							x: Math.floor(mouseX / 30) * 30 + 15,
-							y: Math.floor(mouseY / 30) * 30 + 15,
-							c: count,
-							action: function(){
-								if ((count - this.c) % 240 == 0) {
-									for (var i = -1; i <= 1; i += 0.5) {
-										for (var j = -1; j <= 1; j += 0.5) {
-											if (Math.abs(i) + Math.abs(j) == 1) {
-												grapeshot.push({
-												x: this.x,
-												y: this.y,
-												l: this.l,
-												d: {x: i, y: j},
-												move: function(){
-													if (this.d.x > 0) {
-														this.x = this.x + Math.sqrt(this.d.x) * 2;
-													} else {
-														this.x = this.x - Math.sqrt(Math.abs(this.d.x)) * 2;
-													}
-													if (this.d.y > 0) {
-														this.y = this.y + Math.sqrt(this.d.y) * 2;
-													} else {
-														this.y = this.y - Math.sqrt(Math.abs(this.d.y)) * 2;
-													}
-													ctx.beginPath();
-													ctx.fillStyle = "rgb(190, 190, 75)";
-													ctx.arc(this.x, this.y, 2, 0, Math.PI*2, true);
-													ctx.fill();
-													ctx.closePath();
-													for (var k = 0; k < enemy.length; k++) {
-														if (this.x > enemy[k].x - 5 && this.x < enemy[k].x + 5 && this.y > enemy[k].y - 5 && this.y < enemy[k].y + 5) {
-															enemy[k].h = enemy[k].h - this.l;
-															grapeshot.splice(grapeshot.indexOf(this, 0), 1);
-														}
-													}
-													if (this.x > 540 || this.y > 540 || this.x < 0 || this.y < 0 ) {
-														grapeshot.splice(grapeshot.indexOf(this, 0), 1);
-													}
-												}
-												});
-											}
-										}
-									}
-								}
-							}
-						});
-						money = money - 50;
-					}
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click == "h"){
-						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
-						tower.push({
-							s: "h",
-							l: 1,
-							x: Math.floor(mouseX / 30) * 30 + 15,
-							y: Math.floor(mouseY / 30) * 30 + 15,
-							c: count,
-							action: function(){
-								for (var k = 0; k < enemy.length; k++) {
-									if ((this.l <= 5 && Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 45 + this.l * 15) || (this.l > 5 && Math.sqrt(((enemy[k].x - this.x) * (enemy[k].x - this.x)) + ((enemy[k].y - this.y) * (enemy[k].y - this.y))) < 120)) {
-										ctx.beginPath();
-										ctx.strokeStyle = "rgb(255, 0, 0)";
-										ctx.moveTo(this.x, this.y);
-										ctx.lineTo(enemy[k].x, enemy[k].y);
-										ctx.stroke();
-										ctx.closePath();
-										enemy[k].h = enemy[k].h - (this.l / 2500);
-										break;
-									}
-								}
-
-							}
-						});
+						towers.push(new Tower(click, count));
 						money = money - 50;
 					}
 				}
 				click = false;
 			}
 		}
+		function Pause() {
+			if (event.which == 112 && pause == false) {
+				pause = true;
+			} else if (event.which == 112 && pause == true) {
+				pause = false;
+			}
+		}
 		var intervalID = setInterval(draw,1000 / 60);
 		$("body").on("mousedown",onMouseDown);
 		$("body").on("mouseup",onMouseUp);
+		$("body").on("keypress",Pause);
 	</script>
-	<script src="main.js"></script>
 </body>
 </html>
