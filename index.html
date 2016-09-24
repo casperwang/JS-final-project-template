@@ -136,6 +136,10 @@
 				drawMenu();
 				count++;
 			}
+			if (health <= 0) {
+				clearInterval(intervalID);
+				gameover();
+			}
 		}
 		function drawMap() {
 			var canvas = document.getElementById("game");
@@ -335,6 +339,7 @@
 				this.e = {k: 0, n: 0};
 				this.d = [{x: 0, y: 0}];
 				this.b = [];
+				this.m = 50;
 				if (s == "a") {
 					this.e.n = 121;
 					this.action = function() {
@@ -437,7 +442,7 @@
 							}
 						}
 						this.c.c++;
-						this.c.p = 900 * (1 / Math.sqrt(Math.sqrt(this.l * this.l)));
+						this.c.p = 900 * (1 / Math.sqrt(Math.pow(this.l, 0.85)));
 					}
 				} else if (s == "f") {
 					this.c.p = 1200;
@@ -461,7 +466,7 @@
 							}
 						}
 						this.c.c++;
-						this.c.p = 1200 * (1 / Math.sqrt(Math.sqrt(this.l * this.l)));
+						this.c.p = 1200 * (1 / Math.sqrt(Math.pow(this.l, 0.8)));
 					}
 				} else if (s == "g") {
 					this.c.p = 250;
@@ -479,6 +484,7 @@
 						this.c.c++;
 					}
 				} else if (s == "h") {
+					this.m = 100;
 					this.c.p = 120;
 					this.action = function() {
 						if (this.c.c >= this.c.p) {
@@ -486,10 +492,11 @@
 							this.c.c = 0;
 						}
 						this.c.c++;
-						this.c.p = 60 * (2 / Math.sqrt(Math.sqrt(this.l * this.l)));
+						this.c.p = 60 * (2 / Math.sqrt(Math.pow(this.l, 0.5)));
 					}
 				}
 			}
+			money = money - this.m;
 		}
 		function tower() {
 			var canvas = document.getElementById("game");
@@ -510,7 +517,7 @@
 				} else if (click == "g") {
 					drawTowerG(Math.floor(mouseX / 30) * 30 + 15, Math.floor(mouseY / 30) * 30 + 15);
 				} else if (click == "h") {
-					drawTowerH(Math.floor(mouseX / 30) * 30 + 15, Math.floor(mouseY / 30) * 30 + 15, 1);
+					drawTowerH(Math.floor(mouseX / 30) * 30 + 15, Math.floor(mouseY / 30) * 30 + 15);
 				}
 				for (var i = 0; i < towers.length; i++) {
 					if (towers[i].s == "a") {
@@ -561,7 +568,7 @@
 						ctx.beginPath();
 						ctx.textBaseline = "middle";
 						ctx.textAlign = "center";
-						ctx.font = "10pt cursive";
+						ctx.font = "6pt cursive";
 						ctx.fillStyle = "rgb(0, 0, 0)";
 						ctx.fillText(towers[i].l, towers[i].x, towers[i].y);
 						ctx.closePath();
@@ -835,25 +842,25 @@
 				if (Math.sqrt(((x - mouseX) * (x - mouseX)) + ((y - mouseY) * (y - mouseY))) < 15) {
 					ctx.beginPath();
 					ctx.font = "14pt cursive";
-					ctx.textBaseline = "top";
-					ctx.textAlign = "left";
+					ctx.textBaseline = "middle";
+					ctx.textAlign = "center";
 					ctx.fillStyle = "rgb(255, 255, 255)";
 					if (s == "a") {
-						ctx.fillText("Laser tower", 560, 180);
+						ctx.fillText("Laser tower", 630, 414);
 					} else if (s == "b") {
-						ctx.fillText("Missile tower", 560, 180);
+						ctx.fillText("Missile tower", 630, 414);
 					} else if (s == "c") {
-						ctx.fillText("Lightning tower", 560, 180);
+						ctx.fillText("Lightning tower", 630, 414);
 					} else if (s == "d") {
-						ctx.fillText("Bomb", 560, 180);
+						ctx.fillText("Bomb", 630, 414);
 					} else if (s == "e") {
-						ctx.fillText("Freeze tower", 560, 180);
+						ctx.fillText("Freeze tower", 630, 414);
 					} else if (s == "f") {
-						ctx.fillText("Poison tower", 560, 180);
+						ctx.fillText("Poison tower", 630, 414);
 					} else if (s == "g") {
-						ctx.fillText("Scatter tower", 560, 180);
+						ctx.fillText("Scatter tower", 630, 414);
 					} else if (s == "h") {
-						ctx.fillText("Money tower", 560, 180);
+						ctx.fillText("Money tower", 630, 414);
 					}
 					ctx.closePath();
 					for (var k = 0; k < 7; k++) {
@@ -875,36 +882,34 @@
 						} else if (s == "h") {
 							ctx.strokeStyle = "rgba(" + (90 + k * 20) + ", 0, " + (90 + k * 20) + ", " + (1 - k / 6) + ")";
 						}
-						ctx.moveTo(560, 168 + k);
-						ctx.lineTo(700, 168 + k);
-						ctx.arc(700, 180, 12 - k, 270 * Math.PI / 180, 0, false);
+						ctx.moveTo(560, 388 + k);
+						ctx.lineTo(700, 388 + k);
+						ctx.arc(700, 400, 12 - k, 270 * Math.PI / 180, 0, false);
 						ctx.lineTo(712 - k, 428);
 						ctx.arc(700, 428, 12 - k, 0, 90 * Math.PI / 180, false);
 						ctx.lineTo(563, 440 - k);
 						ctx.arc(560, 428, 12 - k, 90 * Math.PI / 180, Math.PI, false);
-						ctx.lineTo(548 + k, 180);
-						ctx.arc(560, 180, 12 - k, Math.PI, 270 * Math.PI / 180, false);
+						ctx.lineTo(548 + k, 400);
+						ctx.arc(560, 400, 12 - k, Math.PI, 270 * Math.PI / 180, false);
 						ctx.stroke();
 						ctx.closePath();
 					}
 				}
 			}
 		}
-		function onMouseDown() {
+		function gameover() {
 			var canvas = document.getElementById("game");
 			if (canvas.getContext) {
 				var ctx = canvas.getContext("2d");
-				if (mouseX < 540 && mouseY < 540 && mouseX >= 0 && mouseY >= 0 && (Math.floor(mouseX / 30) != 0 || Math.floor(mouseY / 30) != 0)) {
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "tower") {
-						for (var i = 0; i < towers.length; i++) {
-							if (Math.sqrt(((towers[i].x - mouseX) * (towers[i].x - mouseX)) + ((towers[i].y - mouseY) * (towers[i].y - mouseY))) < 15 && money >= 10 && click == false) {
-								towers[i].l = towers[i].l + 1;
-								money = money - 10;
-							}
-						}
-					}
-				}
+				ctx.beginPath();
+				ctx.font = "48pt cursive";
+				ctx.textBaseline = "middle";
+				ctx.textAlign = "center";
+				ctx.fillStyle = "rgb(255, 0, 0)";
+				ctx.fillText("GAMEOVER!!!", 270, 270);
 			}
+		}
+		function onMouseDown() {
 			if (Math.sqrt(((570 - mouseX) * (570 - mouseX)) + ((510 - mouseY) * (510 - mouseY))) < 15) {
 				click = "a";
 			} else if (Math.sqrt(((610 - mouseX) * (610 - mouseX)) + ((510 - mouseY) * (510 - mouseY))) < 15) {
@@ -921,6 +926,15 @@
 				click = "g";
 			} else if (Math.sqrt(((690 - mouseX) * (690 - mouseX)) + ((470 - mouseY) * (470 - mouseY))) < 15) {
 				click = "h";
+			} else if (mouseX < 540 && mouseY < 540 && mouseX >= 0 && mouseY >= 0 && (Math.floor(mouseX / 30) != 0 || Math.floor(mouseY / 30) != 0)) {
+				if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "tower") {
+					for (var i = 0; i < towers.length; i++) {
+						if (Math.sqrt(((towers[i].x - mouseX) * (towers[i].x - mouseX)) + ((towers[i].y - mouseY) * (towers[i].y - mouseY))) < 15 && money >= 10 && click == false) {
+							towers[i].l = towers[i].l + 1;
+							money = money - 10;
+						}
+					}
+				}
 			}
 		}
 		function onMouseUp() {
@@ -928,10 +942,9 @@
 			if (canvas.getContext) {
 				var ctx = canvas.getContext("2d");
 				if (mouseX < 540 && mouseY < 540 && mouseX >= 0 && mouseY >= 0 && (Math.floor(mouseX / 30) != 0 || Math.floor(mouseY / 30) != 0)) {
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click != false) {
+					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click != false && (click != "h" || money >= 100)) {
 						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
 						towers.push(new Tower(click, count));
-						money = money - 50;
 					}
 				}
 				click = false;
