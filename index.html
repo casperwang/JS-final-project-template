@@ -174,7 +174,7 @@
 			this.y = 15;
 			this.d = {x: 1, y: 0};
 			this.i = 0;
-			this.l = Math.floor(Math.sqrt(score * (1  / 100))) + 1;
+			this.l = Math.floor(Math.pow(score * (1  / 100), 0.75)) + 1;
 			this.h = Math.floor(score * (1  / 10)) + 1;
 			this.o = Math.floor(score * (1  / 10)) + 1;
 			this.s = 1;
@@ -221,7 +221,7 @@
 			}
 			for (var i = 0; i < enemies.length; i++) {
 				if (0 >= enemies[i].h) {
-					money = money + Math.floor(enemies[i].l / 50) + 5;
+					money = money + 5;
 					score = score + Math.floor(enemies[i].l);
 					enemies.splice(i, 1);
 				}
@@ -258,8 +258,8 @@
 			this.e = {k: e.k, n: e.n};
 			this.d = {x: 0, y:0};
 			this.move = function() {
-				this.d.x = (enemies[this.e.k].x - this.x) * (1 / (Math.abs(enemies[this.e.k].x - this.x) + Math.abs(enemies[this.e.k].y - this.y)));
-				this.d.y = (enemies[this.e.k].y - this.y) * (1 / (Math.abs(enemies[this.e.k].x - this.x) + Math.abs(enemies[this.e.k].y - this.y)));
+				this.d.x = (enemies[this.e.k].x - this.x) * (1 / (Math.abs(enemies[this.e.k].x - this.x) + Math.abs(enemies[this.e.k].y - this.y) + 0.0000000001));
+				this.d.y = (enemies[this.e.k].y - this.y) * (1 / (Math.abs(enemies[this.e.k].x - this.x) + Math.abs(enemies[this.e.k].y - this.y) + 0.0000000001));
 				if (this.d.x > 0) {
 					this.d.x = Math.sqrt(this.d.x) * 1.25;
 				} else {
@@ -484,7 +484,6 @@
 						this.c.c++;
 					}
 				} else if (s == "h") {
-					this.m = 100;
 					this.c.p = 120;
 					this.action = function() {
 						if (this.c.c >= this.c.p) {
@@ -906,7 +905,8 @@
 				ctx.textBaseline = "middle";
 				ctx.textAlign = "center";
 				ctx.fillStyle = "rgb(255, 0, 0)";
-				ctx.fillText("GAMEOVER!!!", 270, 270);
+				ctx.fillText("GAME OVER!!!", 270, 270);
+				ctx.closePath();
 			}
 		}
 		function onMouseDown() {
@@ -942,7 +942,7 @@
 			if (canvas.getContext) {
 				var ctx = canvas.getContext("2d");
 				if (mouseX < 540 && mouseY < 540 && mouseX >= 0 && mouseY >= 0 && (Math.floor(mouseX / 30) != 0 || Math.floor(mouseY / 30) != 0)) {
-					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click != false && (click != "h" || money >= 100)) {
+					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower" && money >= 50 && click != false) {
 						map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] = "tower";
 						towers.push(new Tower(click, count));
 					}
