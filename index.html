@@ -151,7 +151,7 @@
 				for (var i = 0; i < 18; i++) {
 					for (var j = 0; j < 18; j++) {
 						if (map[i][j] == "unTower" || map[i][j] == "tower") {
-							ctx.fillStyle = "rgb(40, 40, 40)";
+							ctx.fillStyle = "rgb(80, 80, 80)";
 							ctx.fillRect(i * 30 + 1, j * 30 + 1, 28, 28);
 						}
 					}
@@ -159,7 +159,7 @@
 				ctx.fillStyle = "rgb(0, 0, 0)";
 				if (mouseX < 540 && mouseY < 540 && mouseX >= 0 && mouseY >= 0 && (Math.floor(mouseX / 30) != 0 || Math.floor(mouseY / 30) != 0)) {
 					if (map[Math.floor(mouseX / 30)][Math.floor(mouseY / 30)] == "unTower") {
-						ctx.fillStyle = "rgb(15, 15, 15)";
+						ctx.fillStyle = "rgb(40, 40, 40)";
 						ctx.fillRect(Math.floor(mouseX / 30) * 30 + 1, Math.floor(mouseY / 30) * 30 + 1, 28, 28);
 					}
 				}
